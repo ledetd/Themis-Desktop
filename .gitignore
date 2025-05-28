@@ -3,3 +3,7 @@ inventory.db
 *.db
 
 notes.txt
+build
+build/
+dist
+dist/
