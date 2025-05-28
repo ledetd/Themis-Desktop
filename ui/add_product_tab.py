@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLineEdit, QPushButton, QComboBox
 import database
 
 class AddProductTab(QWidget):
@@ -9,8 +9,12 @@ class AddProductTab(QWidget):
 
         self.layout = QVBoxLayout()
 
-        self.category_input = QLineEdit()
-        self.category_input.setPlaceholderText("Category")
+        # Define categories here or pass dynamically if you want
+        self.categories = ["Assets", "Consumables", "Hoses", "Pipe", "Tools", "RCD"]
+
+        self.category_selector = QComboBox()
+        self.category_selector.addItems(self.categories)
+
         self.name_input = QLineEdit()
         self.name_input.setPlaceholderText("Item Name")
         self.number_input = QLineEdit()
@@ -23,13 +27,20 @@ class AddProductTab(QWidget):
         self.add_button = QPushButton("Add Item")
         self.add_button.clicked.connect(self.add_product)
 
-        for widget in [self.category_input, self.name_input, self.number_input, self.description_input, self.quantity_input, self.add_button]:
+        for widget in [
+            self.category_selector,
+            self.name_input,
+            self.number_input,
+            self.description_input,
+            self.quantity_input,
+            self.add_button
+        ]:
             self.layout.addWidget(widget)
 
         self.setLayout(self.layout)
 
     def add_product(self):
-        category = self.category_input.text()
+        category = self.category_selector.currentText()
         name = self.name_input.text()
         number = self.number_input.text()
         description = self.description_input.text()
@@ -41,14 +52,13 @@ class AddProductTab(QWidget):
 
         database.add_product(category, name, number, description, quantity)
 
-        # ✅ Safe check before calling the callback
         if self.add_category_tab_callback:
             self.add_category_tab_callback(category)
 
         self.refresh_callback()
 
-        # Clear inputs
-        self.category_input.clear()
+        # Clear inputs (for QComboBox, reset to first)
+        self.category_selector.setCurrentIndex(0)
         self.name_input.clear()
         self.number_input.clear()
         self.description_input.clear()
